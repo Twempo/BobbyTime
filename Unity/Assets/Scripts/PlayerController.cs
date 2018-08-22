@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
     public float speed;
-    public float jumpForce;
-    public float maxJumpTime;
+    public float maxJumpForce;
+	float jumpForce;
     Rigidbody rb;
-    float jumpTime = 0;
 
     public GameObject cam;
     Rigidbody camRb;
@@ -17,19 +16,21 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponentInChildren<Rigidbody>();
         camRb = cam.GetComponent<Rigidbody>();
         camOffset = cam.transform.position - transform.position;
+		jumpForce = maxJumpForce;
     }
 
     void FixedUpdate() {
         Vector3 movement = speed*(transform.forward*Input.GetAxis("Vertical")+transform.right*Input.GetAxis("Horizontal"));
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
         camRb.MovePosition(transform.position + camOffset);
-        if (Input.GetAxis("Jump") >= .2f && jumpTime <= maxJumpTime)
+		if (Input.GetAxis("Jump")>.9f&&jumpForce>0)
         {
-            Debug.Log("Jumping");
             rb.AddForce(Input.GetAxis("Jump") * transform.up * jumpForce);
-            jumpTime += Time.fixedDeltaTime;
+			jumpForce -= Time.fixedDeltaTime*80;
         }
-        else
-            jumpTime = 0;
+		if(Physics.Raycast( transform.position - new Vector3( 0, 1, 0 ), Vector3.down, 0.01f)) {
+			jumpForce = maxJumpForce;
+			Debug.Log( "Grounded"+transform.position );
+		}
     }
 }
