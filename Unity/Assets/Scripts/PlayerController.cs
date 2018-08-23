@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
     public float speed;
-    public GameObject grounder;
-    public GameObject[] env;
+    public float jumpHeight;
 	float jumpMulti;
     Rigidbody rb;
 
@@ -23,15 +22,19 @@ public class PlayerController : MonoBehaviour {
     void FixedUpdate() {
         Vector3 movement = speed*(transform.forward*Input.GetAxis("Vertical")+transform.right*Input.GetAxis("Horizontal"));
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
-        camRb.MovePosition(transform.position + camOffset);
+       
 		if (Input.GetAxis("Jump")>.9f&&jumpMulti>0)
         {
-            rb.velocity = movement + new Vector3(0,5*jumpMulti,0);
+            rb.velocity = movement + new Vector3(0,jumpHeight*jumpMulti,0);
             jumpMulti -= Time.fixedDeltaTime * 2;
         }
-        foreach(GameObject go in env)
-        {
+        Vector3 camNewPos = Vector3.Lerp(cam.transform.position, transform.position + camOffset, .2f);
+        camRb.MovePosition(camNewPos);
+        Debug.Log(jumpMulti);
+    }
 
-        }
+    void OnTriggerEnter(Collider c) {
+        if (c.CompareTag("Env"))
+            jumpMulti = 1;
     }
 }
