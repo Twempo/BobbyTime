@@ -14,13 +14,13 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject cam;
 	public GameObject camTarget;
+    public GameObject camTargetHolder;
+    public GameObject tripod;
     Rigidbody camRb;
-    Vector3 camOffset;
 
     void Start() {
         rb = GetComponentInChildren<Rigidbody>();
         camRb = cam.GetComponent<Rigidbody>();
-        camOffset = cam.transform.position - transform.position;
 		jumpMulti = 1;
     }
 
@@ -33,12 +33,12 @@ public class PlayerController : MonoBehaviour {
             rb.velocity = movement + new Vector3(0,jumpHeight*jumpMulti,0);
             jumpMulti -= Time.fixedDeltaTime * 2;
         }
-        Vector3 camNewPos = Vector3.Lerp(cam.transform.position, transform.position + camOffset, .6f);
-		//FIXME: camNewPos needs to rotate around player also.
+		transform.RotateAround(transform.position,transform.up,Input.GetAxis("Mouse X")*mouseSensX*Time.fixedDeltaTime);
+
+        Vector3 camNewPos = Vector3.Lerp(cam.transform.position, tripod.transform.position, .45f);
         camRb.MovePosition(camNewPos);
-		//camRb.transform.LookAt(camTarget.transform);
-		transform.RotateAround(transform.position,transform.up,Input.GetAxis("Mouse X")*mouseSensX);
-		camRb.transform.RotateAround( transform.position, transform.up, Input.GetAxis( "Mouse X" ) * mouseSensX );
+        camTarget.transform.position = Vector3.Lerp(camTarget.transform.position, camTargetHolder.transform.position, .45f);
+        camRb.transform.LookAt(camTarget.transform.position);
     }
 
     void OnTriggerEnter(Collider c) {
