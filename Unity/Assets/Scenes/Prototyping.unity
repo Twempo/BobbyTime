@@ -164,6 +164,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6400000, guid: d85d3a32fb6157d488e31edf82b7b1c4, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d85d3a32fb6157d488e31edf82b7b1c4, type: 2}
   m_IsPrefabAsset: 0
@@ -316,6 +321,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 5d2e4237b4429b34fae4c9eb3cd9efd5, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d2e4237b4429b34fae4c9eb3cd9efd5, type: 2}
   m_IsPrefabAsset: 0
@@ -629,6 +639,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
   m_IsPrefabAsset: 0
@@ -688,6 +703,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
   m_IsPrefabAsset: 0
@@ -743,7 +763,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpHeight: 5
-  mouseSensX: 100
+  mouseSensX: 20
   mouseSensY: 10
   cam: {fileID: 1696322518}
   camTarget: {fileID: 427840275}
@@ -827,6 +847,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 5d2e4237b4429b34fae4c9eb3cd9efd5, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d2e4237b4429b34fae4c9eb3cd9efd5, type: 2}
   m_IsPrefabAsset: 0
@@ -1142,6 +1167,11 @@ Prefab:
       propertyPath: m_TagString
       value: Env
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 560b68af0a7d8cb40880e6b331ee201b,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b127815fd0f2074eae3a0c6a4786d0b, type: 2}
   m_IsPrefabAsset: 0
