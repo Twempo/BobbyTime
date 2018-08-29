@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
     public GameObject camTargetHolder;
     public GameObject tripod;
     Rigidbody camRb;
+    private bool zoom = false;
 
     void Start() {
         rb = GetComponentInChildren<Rigidbody>();
@@ -24,6 +25,43 @@ public class PlayerController : MonoBehaviour {
 		jumpMulti = 1;
     }
 
+    private void Update()
+    {
+        if(Input.GetMouseButton(1))
+        {
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 25, .6f);
+            zoom = true;
+        }
+        else
+        {
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 60, .6f);
+            zoom = false;
+        }
+        if (Input.GetMouseButton(0))
+        {
+            /*if (zoom){
+               
+            } else {
+
+            }*/
+            // Bit shift the index of the layer (8) to get a bit mask
+            int layerMask = 1 << 8;
+
+            // This would cast rays only against colliders in layer 8.
+            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            layerMask = ~layerMask;
+
+            RaycastHit hit;
+
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)){
+                Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                Debug.Log("Did Hit");
+            }
+            else {
+                Debug.Log("Did not Hit");
+            }
+        }
+    }
     void FixedUpdate() {
         Vector3 movement = speed*(transform.forward*Input.GetAxis("Vertical")+transform.right*Input.GetAxis("Horizontal"));
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
