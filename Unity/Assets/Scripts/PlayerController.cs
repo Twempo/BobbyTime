@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject camTarget;
     public GameObject camTargetHolder;
     public GameObject tripod;
+    public Gun gun;
     Rigidbody camRb;
     private bool zoom = false;
 
@@ -39,10 +40,12 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetMouseButton(0))
         {
-            /*if (zoom){
+            /*if(gun.getComponent("ammo")>0){
+             * if(zoom){
                
-            } else {
+                } else {
 
+                }
             }*/
             // Bit shift the index of the layer (8) to get a bit mask
             int layerMask = 1 << 8;
