@@ -43,7 +43,6 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetMouseButton(0))
         {
             fireCount+=1;
-            StartCoroutine(waitSeconds(1 / gun.fireRate));
             /*if(gun.getComponent("ammo")>0){
                 if(zoom){
                     
@@ -70,7 +69,7 @@ public class PlayerController : MonoBehaviour {
                     Debug.Log("Did Hit");
                     if (canShoot)
                     {
-                        waitSeconds(1f / gun.fireRate);
+                        StartCoroutine(waitSeconds(1f / gun.fireRate));
                     }
                 }
                 else
@@ -97,7 +96,7 @@ public class PlayerController : MonoBehaviour {
                     Debug.Log("Did Hit");
                     if (canShoot)
                     {
-                        waitSeconds(1f / gun.fireRate);
+                        StartCoroutine(waitSeconds(1f / gun.fireRate));
                     }
                 }
                 else
