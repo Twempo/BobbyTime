@@ -1635,6 +1635,7 @@ MonoBehaviour:
   camTarget: {fileID: 427840275}
   camTargetHolder: {fileID: 37627657}
   tripod: {fileID: 1722007034}
+  ammoCount: {fileID: 1141722412}
   gun: {fileID: 11400000, guid: 9241809262ba86a498d838ac88b298b8, type: 2}
 --- !u!54 &878669403
 Rigidbody:
@@ -2166,7 +2167,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Ammo: '
+  m_Text: 
 --- !u!222 &1141722413
 CanvasRenderer:
   m_ObjectHideFlags: 0
