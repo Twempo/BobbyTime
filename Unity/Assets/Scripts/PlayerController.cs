@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour {
     public Gun gun;
     Rigidbody camRb;
     private bool zoom = false;
+    private float fireCount = 0;
+    private bool canShoot = true;
 
     void Start() {
         rb = GetComponentInChildren<Rigidbody>();
@@ -40,29 +42,73 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetMouseButton(0))
         {
+            fireCount+=1;
+            StartCoroutine(waitSeconds(1 / gun.fireRate));
             /*if(gun.getComponent("ammo")>0){
-             * if(zoom){
-               
+                if(zoom){
+                    
                 } else {
 
                 }
             }*/
-            // Bit shift the index of the layer (8) to get a bit mask
-            int layerMask = 1 << 8;
 
-            // This would cast rays only against colliders in layer 8.
-            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            layerMask = ~layerMask;
+            //recoil accounted for
+            if (fireCount > 1)
+            {
+                // Bit shift the index of the layer (8) to get a bit mask
+                int layerMask = 1 << 8;
 
-            RaycastHit hit;
+                // This would cast rays only against colliders in layer 8.
+                // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                layerMask = ~layerMask;
 
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)){
-                Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
-                Debug.Log("Did Hit");
+                RaycastHit hit;
+
+                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)&&canShoot)
+                {
+                    Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                    if (canShoot)
+                    {
+                        waitSeconds(1f / gun.fireRate);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Did not Hit");
+                }
             }
-            else {
-                Debug.Log("Did not Hit");
+
+            //first shot
+            else
+            {
+                // Bit shift the index of the layer (8) to get a bit mask
+                int layerMask = 1 << 8;
+
+                // This would cast rays only against colliders in layer 8.
+                // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                layerMask = ~layerMask;
+
+                RaycastHit hit;
+
+                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)&&canShoot)
+                {
+                    Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                    if (canShoot)
+                    {
+                        waitSeconds(1f / gun.fireRate);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Did not Hit");
+                }
             }
+        }
+        else
+        {
+            fireCount = 0;
         }
     }
     void FixedUpdate() {
@@ -85,5 +131,12 @@ public class PlayerController : MonoBehaviour {
     void OnTriggerEnter(Collider c) {
         if (c.CompareTag("Env"))
             jumpMulti = 1;
+    }
+
+    IEnumerator waitSeconds(float time)
+    {
+        canShoot = false;
+        yield return new WaitForSeconds(time);
+        canShoot = true;
     }
 }

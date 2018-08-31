@@ -8,7 +8,6 @@ public class Gun : ScriptableObject {
     public int ammo;
     public int clipSize;
     public int maxAmmo;
-    
-    
+    public int fireRate;
 
 }
