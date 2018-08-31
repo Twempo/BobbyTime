@@ -9,5 +9,6 @@ public class Gun : ScriptableObject {
     public int clipSize;
     public int maxAmmo;
     public int fireRate;
+    public float reloadSpeed;
 
 }
