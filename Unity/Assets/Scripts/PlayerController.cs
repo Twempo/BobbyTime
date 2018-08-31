@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
     public float speed;
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject camTarget;
     public GameObject camTargetHolder;
     public GameObject tripod;
+    public Text ammoCount;
     public Gun gun;
     Rigidbody camRb;
     private bool zoom = false;
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponentInChildren<Rigidbody>();
         camRb = cam.GetComponent<Rigidbody>();
 		jumpMulti = 1;
+        ammoCount.text = "Ammo: " + gun.ammo;
     }
 
     private void Update()
@@ -69,6 +72,7 @@ public class PlayerController : MonoBehaviour {
                         Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
                         Debug.Log("Did Hit");
                         gun.ammo--;
+                        updateAmmo();
                         if (canShoot)
                         {
                             StartCoroutine(waitSeconds(1f / gun.fireRate));
@@ -97,6 +101,7 @@ public class PlayerController : MonoBehaviour {
                         Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
                         Debug.Log("Did Hit");
                         gun.ammo--;
+                        updateAmmo();
                         if (canShoot)
                         {
                             StartCoroutine(waitSeconds(1f / gun.fireRate));
@@ -115,8 +120,8 @@ public class PlayerController : MonoBehaviour {
                 {
                     StartCoroutine(waitSeconds(gun.reloadSpeed));
                     gun.ammo += gun.clipSize;
+                    updateAmmo();
                 }
-
             }
         }
         else
@@ -151,5 +156,10 @@ public class PlayerController : MonoBehaviour {
         canShoot = false;
         yield return new WaitForSeconds(time);
         canShoot = true;
+    }
+
+    void updateAmmo()
+    {
+        ammoCount.text = "Ammo: " + gun.ammo.ToString();
     }
 }

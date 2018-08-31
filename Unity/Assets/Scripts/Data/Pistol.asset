@@ -15,4 +15,5 @@ MonoBehaviour:
   ammo: 7
   clipSize: 7
   maxAmmo: 56
-  fireRate: 1
+  fireRate: 15
+  reloadSpeed: 1
