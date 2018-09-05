@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour {
     public float speed;
@@ -18,17 +19,28 @@ public class PlayerController : MonoBehaviour {
     public GameObject camTargetHolder;
     public GameObject tripod;
     public Text ammoCount;
+    public Slider reloading;
     public Gun gun;
     Rigidbody camRb;
+
     private bool zoom = false;
     private float fireCount = 0;
     private bool canShoot = true;
 
+    public int currAmmo;
+    public int totalAmmo;
+
+    public UnityEvent reload;
+    public UnityEvent shoot;
+
     void Start() {
         rb = GetComponentInChildren<Rigidbody>();
         camRb = cam.GetComponent<Rigidbody>();
-		jumpMulti = 1;
-        ammoCount.text = "Ammo: " + gun.ammo;
+        jumpMulti = 1;
+        currAmmo = gun.ammo;
+        totalAmmo = gun.maxAmmo;
+        ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
+        reloading.value = 0;
     }
 
     private void Update()
@@ -45,83 +57,83 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetMouseButton(0))
         {
-            /*if(gun.getComponent("ammo")>0){
-                if(zoom){
-                    
-                } else {
-
-                }
-            }*/
-
-            //recoil accounted for
-            if (gun.ammo > 0)
+            if (totalAmmo > 0 || currAmmo > 0)
             {
-                if (gun.ammo < gun.clipSize - 1)
+                if (currAmmo > 0)
                 {
-                    // Bit shift the index of the layer (8) to get a bit mask
-                    int layerMask = 1 << 8;
-
-                    // This would cast rays only against colliders in layer 8.
-                    // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-                    layerMask = ~layerMask;
-
-                    RaycastHit hit;
-
-                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
+                    if (currAmmo < gun.clipSize - 1)
                     {
-                        Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
-                        Debug.Log("Did Hit");
-                        gun.ammo--;
-                        updateAmmo();
-                        if (canShoot)
+                        // Bit shift the index of the layer (8) to get a bit mask
+                        int layerMask = 1 << 8;
+
+                        // This would cast rays only against colliders in layer 8.
+                        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                        layerMask = ~layerMask;
+
+                        RaycastHit hit;
+
+                        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
                         {
-                            StartCoroutine(waitSeconds(1f / gun.fireRate));
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                            Debug.Log("Did Hit");
+                            currAmmo--;
+                            updateAmmo();
+                            shoot.Invoke();
+                            if (canShoot)
+                            {
+                                StartCoroutine(waitSeconds(1f / gun.fireRate));
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("Did not Hit");
                         }
                     }
+
+                    //first shot
                     else
                     {
-                        Debug.Log("Did not Hit");
+                        // Bit shift the index of the layer (8) to get a bit mask
+                        int layerMask = 1 << 8;
+
+                        // This would cast rays only against colliders in layer 8.
+                        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                        layerMask = ~layerMask;
+
+                        RaycastHit hit;
+
+                        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
+                        {
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                            Debug.Log("Did Hit");
+                            currAmmo--;
+                            updateAmmo();
+                            shoot.Invoke();
+                            if (canShoot)
+                            {
+                                StartCoroutine(waitSeconds(1f / gun.fireRate));
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("Did not Hit");
+                        }
                     }
                 }
 
-                //first shot
                 else
                 {
-                    // Bit shift the index of the layer (8) to get a bit mask
-                    int layerMask = 1 << 8;
-
-                    // This would cast rays only against colliders in layer 8.
-                    // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-                    layerMask = ~layerMask;
-
-                    RaycastHit hit;
-
-                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
+                    //reloading
+                    if (canShoot)
                     {
-                        Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
-                        Debug.Log("Did Hit");
-                        gun.ammo--;
+                        StartCoroutine(waitSeconds(gun.reloadSpeed));
+                        currAmmo += gun.clipSize;
+                        totalAmmo -= gun.clipSize;
                         updateAmmo();
-                        if (canShoot)
-                        {
-                            StartCoroutine(waitSeconds(1f / gun.fireRate));
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Did not Hit");
+                        reload.Invoke();
                     }
                 }
-            }
-            else
-            {
-                //reloading
-                if (canShoot)
-                {
-                    StartCoroutine(waitSeconds(gun.reloadSpeed));
-                    gun.ammo += gun.clipSize;
-                    updateAmmo();
-                }
+
             }
         }
         else
@@ -151,6 +163,7 @@ public class PlayerController : MonoBehaviour {
             jumpMulti = 1;
     }
 
+    //fire rate implemented
     IEnumerator waitSeconds(float time)
     {
         canShoot = false;
@@ -160,6 +173,6 @@ public class PlayerController : MonoBehaviour {
 
     void updateAmmo()
     {
-        ammoCount.text = "Ammo: " + gun.ammo.ToString();
+        ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
     }
 }
