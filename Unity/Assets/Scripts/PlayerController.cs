@@ -27,8 +27,8 @@ public class PlayerController : MonoBehaviour {
     private float fireCount = 0;
     private bool canShoot = true;
 
-    public int currAmmo;
-    public int totalAmmo;
+    private int currAmmo;
+    private int totalAmmo;
 
     public UnityEvent reload;
     public UnityEvent shoot;
@@ -71,10 +71,12 @@ public class PlayerController : MonoBehaviour {
                         layerMask = ~layerMask;
 
                         RaycastHit hit;
+                        //Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
+                        
 
-                        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
+                        if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
-                            Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask))?0: hit.distance), Color.yellow);
                             Debug.Log("Did Hit");
                             currAmmo--;
                             updateAmmo();
@@ -101,10 +103,11 @@ public class PlayerController : MonoBehaviour {
                         layerMask = ~layerMask;
 
                         RaycastHit hit;
+                        Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
 
-                        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && canShoot)
+                        if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
-                            Debug.DrawRay(cam.transform.position, cam.transform.forward * hit.distance, Color.yellow);
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
                             Debug.Log("Did Hit");
                             currAmmo--;
                             updateAmmo();
