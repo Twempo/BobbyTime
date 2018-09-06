@@ -24,8 +24,9 @@ public class PlayerController : MonoBehaviour {
     Rigidbody camRb;
 
     private bool zoom = false;
-    private float fireCount = 0;
     private bool canShoot = true;
+    private bool canReload = true;
+    private bool doneReload = false;
 
     private int currAmmo;
     private int totalAmmo;
@@ -77,7 +78,7 @@ public class PlayerController : MonoBehaviour {
                         if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
                             Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask))?0: hit.distance), Color.yellow);
-                            Debug.Log("Did Hit");
+                            Debug.Log("Did Shoot");
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
@@ -88,7 +89,7 @@ public class PlayerController : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("Did not Hit");
+                            Debug.Log("Did not Shoot");
                         }
                     }
 
@@ -108,7 +109,7 @@ public class PlayerController : MonoBehaviour {
                         if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
                             Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
-                            Debug.Log("Did Hit");
+                            Debug.Log("Did Shoot");
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
@@ -119,29 +120,52 @@ public class PlayerController : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("Did not Hit");
+                            Debug.Log("Did not Shoot");
                         }
                     }
                 }
 
                 else
                 {
-                    //reloading
-                    if (canShoot)
+                    if (doneReload)
                     {
-                        StartCoroutine(waitSeconds(gun.reloadSpeed));
+                        Debug.Log("done reloading");
+                        totalAmmo -= gun.clipSize - currAmmo;
                         currAmmo += gun.clipSize;
-                        totalAmmo -= gun.clipSize;
+                        //Debug.Log(currAmmo);
                         updateAmmo();
                         reload.Invoke();
+                        doneReload = false;
+                        canReload = true;
+                    }
+                    //reloading
+                    if (canReload&&currAmmo<=0)
+                    {
+                        StartCoroutine(reloadTime());
+                        //Debug.Log("reloading");
                     }
                 }
 
             }
         }
-        else
+        if (currAmmo <= 0)
         {
-            fireCount = 0;
+            if (doneReload)
+            {
+                totalAmmo -= gun.clipSize - currAmmo;
+                currAmmo += gun.clipSize;
+                updateAmmo();
+                reload.Invoke();
+                doneReload = false;
+                canReload = true;
+                reloading.value = 0f;
+            }
+            //reloading
+            if (canReload && currAmmo <= 0)
+            {
+                StartCoroutine(reloadTime());
+            }
+            reloading.value += .0167f/gun.reloadSpeed;
         }
     }
     void FixedUpdate() {
@@ -177,5 +201,12 @@ public class PlayerController : MonoBehaviour {
     void updateAmmo()
     {
         ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
+    }
+
+    IEnumerator reloadTime()
+    {
+        canReload = false;
+        yield return new WaitForSeconds(gun.reloadSpeed);
+        doneReload = true;
     }
 }

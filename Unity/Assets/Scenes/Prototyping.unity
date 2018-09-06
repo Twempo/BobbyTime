@@ -1818,17 +1818,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpHeight: 5
-  mouseSensX: 100
-  mouseSensY: 10
+  mouseSensX: 20
+  mouseSensY: 20
   cam: {fileID: 1696322518}
   camTarget: {fileID: 427840275}
   camTargetHolder: {fileID: 37627657}
   tripod: {fileID: 1722007034}
   ammoCount: {fileID: 1141722412}
-  reloading: {fileID: 0}
+  reloading: {fileID: 463078171}
   gun: {fileID: 11400000, guid: 9241809262ba86a498d838ac88b298b8, type: 2}
-  currAmmo: 0
-  totalAmmo: 0
   reload:
     m_PersistentCalls:
       m_Calls: []
