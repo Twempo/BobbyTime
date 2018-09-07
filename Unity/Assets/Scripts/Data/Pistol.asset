@@ -14,6 +14,6 @@ MonoBehaviour:
   name: Pistol
   ammo: 7
   clipSize: 7
-  maxAmmo: 56
+  maxAmmo: 7
   fireRate: 15
   reloadSpeed: 1

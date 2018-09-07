@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour {
     private bool canShoot = true;
     private bool canReload = true;
     private bool doneReload = false;
+    private bool manRel = false;
 
     private int currAmmo;
     private int totalAmmo;
@@ -58,7 +59,7 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetMouseButton(0))
         {
-            if (totalAmmo > 0 || currAmmo > 0)
+            if ((totalAmmo >= 0 || currAmmo > 0) && !manRel)
             {
                 if (currAmmo > 0)
                 {
@@ -124,44 +125,29 @@ public class PlayerController : MonoBehaviour {
                         }
                     }
                 }
-
-                else
-                {
-                    if (doneReload)
-                    {
-                        Debug.Log("done reloading");
-                        totalAmmo -= gun.clipSize - currAmmo;
-                        currAmmo += gun.clipSize;
-                        //Debug.Log(currAmmo);
-                        updateAmmo();
-                        reload.Invoke();
-                        doneReload = false;
-                        canReload = true;
-                    }
-                    //reloading
-                    if (canReload&&currAmmo<=0)
-                    {
-                        StartCoroutine(reloadTime());
-                        //Debug.Log("reloading");
-                    }
-                }
-
             }
         }
-        if (currAmmo <= 0)
+        if (Input.GetKey("r") && currAmmo != gun.clipSize && totalAmmo>0)
+        {
+            manRel = true;
+            canReload = true;
+        }
+        if ((currAmmo <= 0||manRel||doneReload)&&totalAmmo>0)
         {
             if (doneReload)
             {
-                totalAmmo -= gun.clipSize - currAmmo;
-                currAmmo += gun.clipSize;
+                int place = currAmmo;
+                currAmmo += gun.clipSize - currAmmo>totalAmmo?totalAmmo:gun.clipSize-currAmmo;
+                totalAmmo -= gun.clipSize - currAmmo<totalAmmo?gun.clipSize-place:0;
                 updateAmmo();
                 reload.Invoke();
                 doneReload = false;
                 canReload = true;
                 reloading.value = 0f;
+                manRel = false;
             }
             //reloading
-            if (canReload && currAmmo <= 0)
+            if (canReload && (currAmmo <= 0||manRel))
             {
                 StartCoroutine(reloadTime());
             }
@@ -188,6 +174,12 @@ public class PlayerController : MonoBehaviour {
     void OnTriggerEnter(Collider c) {
         if (c.CompareTag("Env"))
             jumpMulti = 1;
+        if(c.CompareTag("Ammo Pickup"))
+        {
+            c.gameObject.SetActive(false);
+            totalAmmo = gun.maxAmmo;
+            updateAmmo();
+        }
     }
 
     //fire rate implemented
@@ -208,5 +200,6 @@ public class PlayerController : MonoBehaviour {
         canReload = false;
         yield return new WaitForSeconds(gun.reloadSpeed);
         doneReload = true;
+        manRel = false;
     }
 }
