@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour {
             {
                 int place = currAmmo;
                 currAmmo += gun.clipSize - currAmmo>totalAmmo?totalAmmo:gun.clipSize-currAmmo;
-                totalAmmo -= gun.clipSize - currAmmo<totalAmmo?gun.clipSize-place:0;
+                totalAmmo -= gun.clipSize - currAmmo<totalAmmo&& totalAmmo-(gun.clipSize-place)>=0?gun.clipSize-place:totalAmmo;
                 updateAmmo();
                 reload.Invoke();
                 doneReload = false;
