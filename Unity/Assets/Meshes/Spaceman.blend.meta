@@ -4,13 +4,70 @@ ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Armature
+    100004: Chest
+    100006: Fingers1_L
+    100008: Fingers1_R_001
+    100010: Fingers2_L
+    100012: Fingers2_R_001
+    100014: Foot_L
+    100016: Foot_R_001
+    100018: FootControl_L
+    100020: FootControl_R_001
+    100022: Hand_L
+    100024: Hand_R_001
+    100026: Head
+    100028: LowerArm_L
+    100030: LowerArm_R_001
+    100032: LowerLeg_L
+    100034: LowerLeg_R_001
+    100036: Mesh
+    100038: Neck
+    100040: Thumb1_L
+    100042: Thumb1_R_001
+    100044: Thumb2_L
+    100046: Thumb2_R_001
+    100048: Torso
+    100050: UpperArm_L
+    100052: UpperArm_R_001
+    100054: UpperLeg_L
+    100056: UpperLeg_R_001
     400000: //RootNode
+    400002: Armature
+    400004: Chest
+    400006: Fingers1_L
+    400008: Fingers1_R_001
+    400010: Fingers2_L
+    400012: Fingers2_R_001
+    400014: Foot_L
+    400016: Foot_R_001
+    400018: FootControl_L
+    400020: FootControl_R_001
+    400022: Hand_L
+    400024: Hand_R_001
+    400026: Head
+    400028: LowerArm_L
+    400030: LowerArm_R_001
+    400032: LowerLeg_L
+    400034: LowerLeg_R_001
+    400036: Mesh
+    400038: Neck
+    400040: Thumb1_L
+    400042: Thumb1_R_001
+    400044: Thumb2_L
+    400046: Thumb2_R_001
+    400048: Torso
+    400050: UpperArm_L
+    400052: UpperArm_R_001
+    400054: UpperLeg_L
+    400056: UpperLeg_R_001
     2100000: Material
     2300000: //RootNode
     3300000: //RootNode
     4300000: Mesh
     7400000: Default Take
     9500000: //RootNode
+    13700000: Mesh
   externalObjects: {}
   materials:
     importMaterials: 1
