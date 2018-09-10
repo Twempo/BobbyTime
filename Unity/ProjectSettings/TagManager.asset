@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Env
+  - Ammo Pickup
   layers:
   - Default
   - TransparentFX
