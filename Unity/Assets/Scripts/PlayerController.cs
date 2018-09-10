@@ -190,6 +190,7 @@ public class PlayerController : MonoBehaviour {
         {
             c.gameObject.SetActive(false);
             totalAmmo = gun.maxAmmo;
+            currAmmo = gun.clipSize;
             updateAmmo();
         }
     }
