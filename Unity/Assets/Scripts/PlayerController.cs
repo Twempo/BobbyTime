@@ -85,7 +85,36 @@ public class PlayerController : MonoBehaviour {
             Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 60, .6f);
             zoom = false;
         }
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0) && gun.fireType == Type.Semi && canShoot && !manRel && currAmmo!=0)
+        {
+            // Bit shift the index of the layer (8) to get a bit mask
+            int layerMask = 1 << 8;
+     
+            // This would cast rays only against colliders in layer 8.
+            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            layerMask = ~layerMask;
+
+            RaycastHit hit;
+            Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
+
+                if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
+                {
+                Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
+                Debug.Log("Did Shoot");
+                currAmmo--;
+                updateAmmo();
+                shoot.Invoke();
+                if (canShoot)
+                {
+                    StartCoroutine(waitSeconds(1f / gun.fireRate));
+                }
+            }
+            else
+            {
+                Debug.Log("Did not Shoot");
+            }
+        }
+        if (Input.GetMouseButton(0)&&gun.fireType!=Type.Semi)
         {
             if ((totalAmmo >= 0 || currAmmo > 0) && !manRel)
             {
@@ -190,6 +219,7 @@ public class PlayerController : MonoBehaviour {
         {
             c.gameObject.SetActive(false);
             totalAmmo = gun.maxAmmo;
+            currAmmo = gun.clipSize;
             updateAmmo();
         }
     }
