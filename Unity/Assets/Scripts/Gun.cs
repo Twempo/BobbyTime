@@ -10,5 +10,7 @@ public class Gun : ScriptableObject {
     public int maxAmmo;
     public int fireRate;
     public float reloadSpeed;
-
+    public Type fireType;
 }
+
+public enum Type {Auto,Semi}

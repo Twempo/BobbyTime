@@ -9,12 +9,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 074ffa74e7bc58a4c8ee46460ac8e589, type: 3}
-  m_Name: Pistol
+  m_Name: Rifle
   m_EditorClassIdentifier: 
-  name: Pistol
-  ammo: 7
-  clipSize: 7
-  maxAmmo: 56
-  fireRate: 15
-  reloadSpeed: 1
-  fireType: 1
+  name: Rifle
+  ammo: 31
+  clipSize: 30
+  maxAmmo: 210
+  fireRate: 30
+  reloadSpeed: 2
+  fireType: 0
