@@ -200,8 +200,8 @@ ModelImporter:
     - serializedVersion: 16
       name: RunBackwardTurnRight_NtrlShort_1
       takeName: _35_a_U1_M_P_RunBackwardTurnRight_NtrlShort__Fb_Dia1m_No_0_PJ_0
-      firstFrame: 0
-      lastFrame: 333
+      firstFrame: 49
+      lastFrame: 166
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
