@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour {
     public Text ammoCount;
     public Slider reloading;
     public Gun gun;
+    public int maxHealth;
 
     private bool zoom = false;
     private bool canShoot = true;
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour {
 
     private int currAmmo;
     private int totalAmmo;
+    private int currHealth;
 
     public UnityEvent reload;
     public UnityEvent shoot;
@@ -43,6 +45,7 @@ public class PlayerController : MonoBehaviour {
 		Cursor.visible = false;
         currAmmo = gun.ammo;
         totalAmmo = gun.maxAmmo;
+        currHealth = maxHealth;
         ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
         reloading.value = 0;
 	}
@@ -243,5 +246,15 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(gun.reloadSpeed);
         doneReload = true;
         manRel = false;
+    }
+
+    void setCurrHealth(int change)
+    {
+        currHealth = change;
+    }
+
+    int getCurrHealth()
+    {
+        return currHealth;
     }
 }
