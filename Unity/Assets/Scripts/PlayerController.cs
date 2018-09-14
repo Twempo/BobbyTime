@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour {
     public Slider reloading;
     public Gun gun;
     public int maxHealth;
+    public Slider healthBar;
+    public Text health;
 
     private bool zoom = false;
     private bool canShoot = true;
@@ -48,7 +50,9 @@ public class PlayerController : MonoBehaviour {
         currHealth = maxHealth;
         ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
         reloading.value = 0;
-	}
+        health.text = currHealth.ToString();
+        healthBar.value = currHealth;
+    }
 
 	void FixedUpdate() {
 		//	Motion
@@ -251,6 +255,8 @@ public class PlayerController : MonoBehaviour {
     void setCurrHealth(int change)
     {
         currHealth = change;
+        health.text = currHealth.ToString();
+        healthBar.value = currHealth;
     }
 
     int getCurrHealth()
