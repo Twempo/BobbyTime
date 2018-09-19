@@ -2125,6 +2125,9 @@ MonoBehaviour:
   maxHealth: 100
   healthBar: {fileID: 658514659}
   health: {fileID: 2037196493}
+  range: 100
+  trailPrefab: {fileID: 1377661778661600, guid: de0b28a386653664790b6c064abd965d,
+    type: 2}
   reload:
     m_PersistentCalls:
       m_Calls: []

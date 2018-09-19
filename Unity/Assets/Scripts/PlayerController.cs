@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour {
     public int maxHealth;
     public Slider healthBar;
     public Text health;
+    public float range;
 
     private bool zoom = false;
     private bool canShoot = true;
@@ -35,6 +36,8 @@ public class PlayerController : MonoBehaviour {
     private int currAmmo;
     private int totalAmmo;
     private int currHealth;
+
+    public GameObject trailPrefab;
 
     public UnityEvent reload;
     public UnityEvent shoot;
@@ -70,14 +73,7 @@ public class PlayerController : MonoBehaviour {
 		Vector3 camNewPos = Vector3.Lerp( cam.transform.position, tripod.transform.position, .45f );
 		camRb.MovePosition( camNewPos );
 		camTarget.transform.position = Vector3.Lerp( camTarget.transform.position, camTargetHolder.transform.position, .45f );
-		tripod.transform.LookAt( camTarget.transform );
-		float newX = camRb.rotation.eulerAngles.x + (-Input.GetAxis( "Mouse Y" ) * mouseSensY * Time.fixedDeltaTime * 5);
-		if(newX < 180)
-			newX = Mathf.Clamp( newX, 0, 30 );
-		else
-			newX = Mathf.Clamp( newX, 330, 359 );
-		camRb.transform.rotation = Quaternion.Euler( newX, tripod.transform.rotation.eulerAngles.y, tripod.transform.rotation.eulerAngles.z );
-		Debug.Log( tripod.transform.rotation.eulerAngles.y + ", " + camRb.transform.rotation.eulerAngles.y );
+        Vector3 camHeight = 
 	}
 
     private void Update()
@@ -95,19 +91,19 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetMouseButtonDown(0) && gun.fireType == Type.Semi && canShoot && !manRel && currAmmo!=0)
         {
             // Bit shift the index of the layer (8) to get a bit mask
-            int layerMask = 1 << 8;
+            //int layerMask = 1 << 8;
      
             // This would cast rays only against colliders in layer 8.
             // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            layerMask = ~layerMask;
+            //layerMask = ~layerMask;
 
             RaycastHit hit;
-            Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
+            Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity);
 
                 if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                 {
-                Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
-                Debug.Log("Did Shoot");
+                Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity)) ? range : hit.distance), Color.yellow);
+                trail(cam.transform.position + (cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity)) ? range : hit.distance)));
                 currAmmo--;
                 updateAmmo();
                 shoot.Invoke();
@@ -118,7 +114,7 @@ public class PlayerController : MonoBehaviour {
             }
             else
             {
-                Debug.Log("Did not Shoot");
+                //Did not shoot
             }
         }
         if (Input.GetMouseButton(0)&&gun.fireType!=Type.Semi)
@@ -142,8 +138,8 @@ public class PlayerController : MonoBehaviour {
 
                         if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
-                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask))?0: hit.distance), Color.yellow);
-                            Debug.Log("Did Shoot");
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity))?range: hit.distance), Color.yellow);
+                            trail(cam.transform.position + (cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity)) ? range : hit.distance)));
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
@@ -154,7 +150,7 @@ public class PlayerController : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("Did not Shoot");
+                            //Did not shoot
                         }
                     }
 
@@ -169,12 +165,12 @@ public class PlayerController : MonoBehaviour {
                         layerMask = ~layerMask;
 
                         RaycastHit hit;
-                        Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
+                        Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity);
 
                         if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
                         {
-                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
-                            Debug.Log("Did Shoot");
+                            Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity)) ? range : hit.distance), Color.yellow);
+                            trail(cam.transform.position + (cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity)) ? range : hit.distance)));
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
@@ -185,7 +181,7 @@ public class PlayerController : MonoBehaviour {
                         }
                         else
                         {
-                            Debug.Log("Did not Shoot");
+                            //Did not shoot
                         }
                     }
                 }
@@ -262,5 +258,14 @@ public class PlayerController : MonoBehaviour {
     int getCurrHealth()
     {
         return currHealth;
+    }
+
+    void trail(Vector3 end)
+    {
+        GameObject go = Instantiate(trailPrefab, transform);
+        LineRenderer line = go.GetComponent<LineRenderer>();
+        line.SetPosition(0, transform.position + Vector3.up);
+        line.SetPosition(1, end);
+        Destroy(go, .1f);
     }
 }
