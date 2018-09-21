@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+//need to give separate ammo to each gun
+//need to implement swap weapons with wait time
 public class PlayerController : MonoBehaviour {
 	public float speed;
 	public float jumpHeight;
@@ -21,37 +23,58 @@ public class PlayerController : MonoBehaviour {
 	Rigidbody camRb;
     public Text ammoCount;
     public Slider reloading;
-    public Gun gun;
+    public Gun primary;
+    public Gun secondary;
     public int maxHealth;
     public Slider healthBar;
     public Text health;
 
+    private Gun currGun;
     private bool zoom = false;
     private bool canShoot = true;
     private bool canReload = true;
     private bool doneReload = false;
     private bool manRel = false;
+    private bool swapping = false;
+    private bool swapped;
 
+    private IEnumerator reloadingTime;
+    private IEnumerator shot;
+    
     private int currAmmo;
     private int totalAmmo;
     private int currHealth;
+
+    private int primaryTotalAmmo;
+    private int primaryCurrAmmo;
+
+    private int secondaryTotalAmmo;
+    private int secondaryCurrAmmo;
 
     public UnityEvent reload;
     public UnityEvent shoot;
 
 	void Start() {
-		rb = GetComponentInChildren<Rigidbody>();
+        currGun = primary;
+        rb = GetComponentInChildren<Rigidbody>();
 		camRb = cam.GetComponent<Rigidbody>();
 		jumpMulti = 1;
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
-        currAmmo = gun.ammo;
-        totalAmmo = gun.maxAmmo;
+        swapped = false;
+
+        primaryCurrAmmo = primary.clipSize;
+        primaryTotalAmmo = primary.maxAmmo;
+        secondaryCurrAmmo = secondary.clipSize;
+        secondaryTotalAmmo = secondary.maxAmmo;
+        currAmmo = currGun.ammo;
+        totalAmmo = currGun.maxAmmo;
         currHealth = maxHealth;
-        ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
+        ammoCount.text = "\t" + currGun.name + "\n" + "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
         reloading.value = 0;
         health.text = currHealth.ToString();
         healthBar.value = currHealth;
+        
     }
 
 	void FixedUpdate() {
@@ -77,7 +100,6 @@ public class PlayerController : MonoBehaviour {
 		else
 			newX = Mathf.Clamp( newX, 330, 359 );
 		camRb.transform.rotation = Quaternion.Euler( newX, tripod.transform.rotation.eulerAngles.y, tripod.transform.rotation.eulerAngles.z );
-		Debug.Log( tripod.transform.rotation.eulerAngles.y + ", " + camRb.transform.rotation.eulerAngles.y );
 	}
 
     private void Update()
@@ -92,7 +114,8 @@ public class PlayerController : MonoBehaviour {
             Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 60, .6f);
             zoom = false;
         }
-        if (Input.GetMouseButtonDown(0) && gun.fireType == Type.Semi && canShoot && !manRel && currAmmo!=0)
+
+        if (Input.GetMouseButtonDown(0) && currGun.fireType == Type.Semi && canShoot && !manRel && currAmmo!=0)
         {
             // Bit shift the index of the layer (8) to get a bit mask
             int layerMask = 1 << 8;
@@ -104,30 +127,26 @@ public class PlayerController : MonoBehaviour {
             RaycastHit hit;
             Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
 
-                if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
+                if (canShoot)
                 {
                 Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
-                Debug.Log("Did Shoot");
                 currAmmo--;
                 updateAmmo();
                 shoot.Invoke();
                 if (canShoot)
                 {
-                    StartCoroutine(waitSeconds(1f / gun.fireRate));
+                    StartCoroutine(waitSeconds(1f / currGun.fireRate));
                 }
             }
-            else
-            {
-                Debug.Log("Did not Shoot");
-            }
         }
-        if (Input.GetMouseButton(0)&&gun.fireType!=Type.Semi)
+
+        if (Input.GetMouseButton(0)&&currGun.fireType!=Type.Semi)
         {
             if ((totalAmmo >= 0 || currAmmo > 0) && !manRel)
             {
                 if (currAmmo > 0)
                 {
-                    if (currAmmo < gun.clipSize - 1)
+                    if (currAmmo < currGun.clipSize - 1)
                     {
                         // Bit shift the index of the layer (8) to get a bit mask
                         int layerMask = 1 << 8;
@@ -137,24 +156,18 @@ public class PlayerController : MonoBehaviour {
                         layerMask = ~layerMask;
 
                         RaycastHit hit;
-                        //Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
                         
 
-                        if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
+                        if (canShoot)
                         {
                             Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask))?0: hit.distance), Color.yellow);
-                            Debug.Log("Did Shoot");
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
                             if (canShoot)
                             {
-                                StartCoroutine(waitSeconds(1f / gun.fireRate));
+                                StartCoroutine(waitSeconds(1f / currGun.fireRate));
                             }
-                        }
-                        else
-                        {
-                            Debug.Log("Did not Shoot");
                         }
                     }
 
@@ -171,38 +184,45 @@ public class PlayerController : MonoBehaviour {
                         RaycastHit hit;
                         Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask);
 
-                        if (/*Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask) && */canShoot)
+                        if (canShoot)
                         {
                             Debug.DrawRay(cam.transform.position, cam.transform.forward * (!(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, layerMask)) ? 0 : hit.distance), Color.yellow);
-                            Debug.Log("Did Shoot");
                             currAmmo--;
                             updateAmmo();
                             shoot.Invoke();
                             if (canShoot)
                             {
-                                StartCoroutine(waitSeconds(1f / gun.fireRate));
+                                StartCoroutine(waitSeconds(1f / currGun.fireRate));
                             }
-                        }
-                        else
-                        {
-                            Debug.Log("Did not Shoot");
                         }
                     }
                 }
             }
         }
-        if (Input.GetKey("r") && currAmmo != gun.clipSize && totalAmmo>0)
+
+        if (doneReload)
+        {
+            if (swapped)
+            {
+                swapped = false;
+                doneReload = false;
+                canReload = true;
+                manRel = false;
+            }
+        }
+
+        if (Input.GetKey("r") && currAmmo != currGun.clipSize && totalAmmo>0)
         {
             manRel = true;
             canReload = true;
         }
-        if ((currAmmo <= 0||manRel||doneReload)&&totalAmmo>0)
+        if (((currAmmo <= 0||manRel||doneReload)&&totalAmmo>0)&&!swapping)
         {
-            if (doneReload)
+            if (doneReload&&!swapped&&!swapping)
             {
                 int place = currAmmo;
-                currAmmo += gun.clipSize - currAmmo>totalAmmo?totalAmmo:gun.clipSize-currAmmo;
-                totalAmmo -= gun.clipSize - currAmmo<totalAmmo&& totalAmmo-(gun.clipSize-place)>=0?gun.clipSize-place:totalAmmo;
+                currAmmo += currGun.clipSize - currAmmo>totalAmmo?totalAmmo:currGun.clipSize-currAmmo;
+                totalAmmo -= currGun.clipSize - currAmmo<totalAmmo&& totalAmmo-(currGun.clipSize-place)>=0?currGun.clipSize-place:totalAmmo;
                 updateAmmo();
                 reload.Invoke();
                 doneReload = false;
@@ -211,11 +231,19 @@ public class PlayerController : MonoBehaviour {
                 manRel = false;
             }
             //reloading
-            if (canReload && (currAmmo <= 0||manRel))
+            if (canReload && (currAmmo <= 0||manRel)&& !swapping)
             {
+                reloadingTime = reloadTime();
                 StartCoroutine(reloadTime());
+                Debug.Log("Start!");
             }
-            reloading.value += .0167f/gun.reloadSpeed;
+            reloading.value += .0167f/currGun.reloadSpeed;
+        }
+
+        if (Input.GetKeyDown("q"))
+        {
+            swapWeapon();
+            StartCoroutine(swappo(currGun.reloadSpeed/2));
         }
     }
 
@@ -225,8 +253,8 @@ public class PlayerController : MonoBehaviour {
         if(c.CompareTag("Ammo Pickup"))
         {
             c.gameObject.SetActive(false);
-            totalAmmo = gun.maxAmmo;
-            currAmmo = gun.clipSize;
+            totalAmmo = currGun.maxAmmo;
+            currAmmo = currGun.clipSize;
             updateAmmo();
         }
     }
@@ -239,17 +267,30 @@ public class PlayerController : MonoBehaviour {
         canShoot = true;
     }
 
-    void updateAmmo()
+    IEnumerator swappo(float time)
     {
-        ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
+        swapping = true;
+        StopCoroutine(reloadingTime);
+        Debug.Log("Stop!");
+        yield return new WaitForSeconds(time);
+        swapping = false;
+        manRel = false;
+        doneReload = false;
+        canReload = true;
+        swapped = true;
     }
 
     IEnumerator reloadTime()
     {
         canReload = false;
-        yield return new WaitForSeconds(gun.reloadSpeed);
+        yield return new WaitForSeconds(currGun.reloadSpeed);
         doneReload = true;
         manRel = false;
+    }
+
+    void updateAmmo()
+    {
+        ammoCount.text = "\t" + currGun.name + "\n" + "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
     }
 
     void setCurrHealth(int change)
@@ -262,5 +303,30 @@ public class PlayerController : MonoBehaviour {
     int getCurrHealth()
     {
         return currHealth;
+    }
+
+    void swapWeapon()
+    {
+        reloading.value = 0;
+        if (currGun == secondary)
+        {
+            secondaryCurrAmmo = currAmmo;
+            secondaryTotalAmmo = totalAmmo;
+
+            currGun = primary;
+            currAmmo = primaryCurrAmmo;
+            totalAmmo = primaryTotalAmmo;
+            updateAmmo();
+        }
+        else if(currGun == primary)
+        {
+            primaryCurrAmmo = currAmmo;
+            primaryTotalAmmo = totalAmmo;
+
+            currGun = secondary;
+            currAmmo = secondaryCurrAmmo;
+            totalAmmo = secondaryTotalAmmo;
+            updateAmmo();
+        }
     }
 }
