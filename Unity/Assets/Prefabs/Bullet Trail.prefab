@@ -80,7 +80,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 2
-    widthMultiplier: 0.2
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -116,9 +116,9 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 0.9433962, g: 0.9067711, b: 0.30704877, a: 1}
-      key2: {r: 1, g: 1, b: 1, a: 0}
+      key0: {r: 0.5, g: 0.5, b: 0.5, a: 0.39215687}
+      key1: {r: 0.9433962, g: 0.9067711, b: 0.30704877, a: 0.39215687}
+      key2: {r: 0.509434, g: 0.509434, b: 0.509434, a: 0.39215687}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -133,8 +133,8 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 1349
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
@@ -142,7 +142,7 @@ LineRenderer:
       atime7: 0
       m_Mode: 0
       m_NumColorKeys: 3
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0

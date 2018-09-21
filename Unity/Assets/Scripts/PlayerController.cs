@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController :  NetworkBehaviour {
 	public float speed;
 	public float jumpHeight;
 
@@ -38,27 +39,41 @@ public class PlayerController : MonoBehaviour {
     private int currHealth;
 
     public GameObject trailPrefab;
+    public GameObject UIPrefab;
 
     public UnityEvent reload;
     public UnityEvent shoot;
 
 	void Start() {
-		rb = GetComponentInChildren<Rigidbody>();
-		camRb = cam.GetComponent<Rigidbody>();
-		jumpMulti = 1;
-		Cursor.lockState = CursorLockMode.Locked;
-		Cursor.visible = false;
-        currAmmo = gun.ammo;
-        totalAmmo = gun.maxAmmo;
-        currHealth = maxHealth;
-        ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
-        reloading.value = 0;
-        health.text = currHealth.ToString();
-        healthBar.value = currHealth;
+        if (isLocalPlayer)
+        {
+            GameObject ui = Instantiate(UIPrefab, FindObjectOfType<Canvas>().transform);
+            PlayerUIRef refs = ui.GetComponent<PlayerUIRef>();
+            ammoCount = refs.ammoCount;
+            reloading = refs.reloading;
+            healthBar = refs.healthBar;
+            health = refs.health;
+            camRb = cam.GetComponent<Rigidbody>();
+            jumpMulti = 1;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            currAmmo = gun.ammo;
+            totalAmmo = gun.maxAmmo;
+            currHealth = maxHealth;
+            ammoCount.text = "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
+            reloading.value = 0;
+            health.text = currHealth.ToString();
+            healthBar.value = currHealth;
+        }
+        else
+            cam.active = false;
+        rb = GetComponentInChildren<Rigidbody>();
     }
 
 	void FixedUpdate() {
-		//	Motion
+        //	Motion
+        if (rb == null)
+            return;
 		Vector3 movement = speed * (transform.forward * Input.GetAxis( "Vertical" ) + transform.right * Input.GetAxis( "Horizontal" ));
 		rb.velocity = new Vector3( movement.x, rb.velocity.y, movement.z );
 
@@ -73,7 +88,7 @@ public class PlayerController : MonoBehaviour {
 		Vector3 camNewPos = Vector3.Lerp( cam.transform.position, tripod.transform.position, .45f );
 		camRb.MovePosition( camNewPos );
 		camTarget.transform.position = Vector3.Lerp( camTarget.transform.position, camTargetHolder.transform.position, .45f );
-        Vector3 camHeight = 
+        camRb.transform.LookAt(camTarget.transform);
 	}
 
     private void Update()
