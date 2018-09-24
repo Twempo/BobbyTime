@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour {
     private bool zoom = false;
     private bool canShoot = true;
     private bool canReload = true;
-    private bool doneReload = false;
+    private bool shouldReload = false;
     private bool manRel = false;
     private bool swapping = false;
     private bool swapped;
@@ -200,13 +200,13 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
-        if (doneReload)
+        if (shouldReload)
         {
             if (swapped)
             {
                 //Debug.Log("Just Kidding!");
                 swapped = false;
-                doneReload = false;
+                shouldReload = false;
                 canReload = true;
                 manRel = false;
             }
@@ -217,17 +217,17 @@ public class PlayerController : MonoBehaviour {
             manRel = true;
             canReload = true;
         }
-        Debug.Log("ManRel: " + manRel + ", DoneRel: " + doneReload);
-        if (((currAmmo <= 0||manRel||doneReload)&&totalAmmo>0)&&!swapping)
+        Debug.Log("ManRel: " + manRel + ", DoneRel: " + shouldReload);
+        if (((currAmmo <= 0||manRel||shouldReload)&&totalAmmo>0)&&!swapping)
         {
-            if (doneReload&&!swapped&&!swapping)
+            if (shouldReload&&!swapped&&!swapping)
             {
                 int place = currAmmo;
                 currAmmo += currGun.clipSize - currAmmo>totalAmmo?totalAmmo:currGun.clipSize-currAmmo;
                 totalAmmo -= currGun.clipSize - currAmmo<totalAmmo&& totalAmmo-(currGun.clipSize-place)>=0?currGun.clipSize-place:totalAmmo;
                 updateAmmo();
                 reload.Invoke();
-                doneReload = false;
+                shouldReload = false;
                 canReload = true;
                 reloading.value = 0f;
                 manRel = false;
@@ -244,7 +244,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyDown("q"))
         {
             swapWeapon();
-            StartCoroutine(swappo(currGun.reloadSpeed/2));
+            swappo(currGun.reloadSpeed/2);
         }
     }
 
@@ -268,14 +268,14 @@ public class PlayerController : MonoBehaviour {
         canShoot = true;
     }
 
-    IEnumerator swappo(float time)
+    void swappo(float time)
     {
         swapping = true;
-        StopCoroutine(reloadingTime);
-        yield return new WaitForSeconds(time);
+        StopAllCoroutines();
+        StartCoroutine(waitSeconds(time));
         swapping = false;
         manRel = false;
-        doneReload = false;
+        shouldReload = false;
         canReload = true;
         swapped = true;
     }
@@ -284,7 +284,7 @@ public class PlayerController : MonoBehaviour {
     {
         canReload = false;
         yield return new WaitForSeconds(currGun.reloadSpeed);
-        doneReload = true;
+        shouldReload = true;
         manRel = false;
     }
 
