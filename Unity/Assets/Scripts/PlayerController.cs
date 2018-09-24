@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour {
         totalAmmo = currGun.maxAmmo;
         currHealth = maxHealth;
         ammoCount.text = "\t" + currGun.name + "\n" + "Ammo: " + currAmmo.ToString() + "/" + totalAmmo.ToString();
-        reloading.value = 0;
+        reloading.value = 0f;
         health.text = currHealth.ToString();
         healthBar.value = currHealth;
         
@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour {
             zoom = false;
         }
 
-        if (Input.GetMouseButtonDown(0) && currGun.fireType == Type.Semi && canShoot && !manRel && currAmmo!=0)
+        if (Input.GetMouseButtonDown(0) && currGun.fireType == Type.Semi && canShoot && !manRel && currAmmo>0)
         {
             // Bit shift the index of the layer (8) to get a bit mask
             int layerMask = 1 << 8;
@@ -204,6 +204,7 @@ public class PlayerController : MonoBehaviour {
         {
             if (swapped)
             {
+                //Debug.Log("Just Kidding!");
                 swapped = false;
                 doneReload = false;
                 canReload = true;
@@ -216,6 +217,7 @@ public class PlayerController : MonoBehaviour {
             manRel = true;
             canReload = true;
         }
+        Debug.Log("ManRel: " + manRel + ", DoneRel: " + doneReload);
         if (((currAmmo <= 0||manRel||doneReload)&&totalAmmo>0)&&!swapping)
         {
             if (doneReload&&!swapped&&!swapping)
@@ -235,7 +237,6 @@ public class PlayerController : MonoBehaviour {
             {
                 reloadingTime = reloadTime();
                 StartCoroutine(reloadTime());
-                Debug.Log("Start!");
             }
             reloading.value += .0167f/currGun.reloadSpeed;
         }
@@ -271,7 +272,6 @@ public class PlayerController : MonoBehaviour {
     {
         swapping = true;
         StopCoroutine(reloadingTime);
-        Debug.Log("Stop!");
         yield return new WaitForSeconds(time);
         swapping = false;
         manRel = false;
@@ -307,7 +307,7 @@ public class PlayerController : MonoBehaviour {
 
     void swapWeapon()
     {
-        reloading.value = 0;
+        reloading.value = 0f;
         if (currGun == secondary)
         {
             secondaryCurrAmmo = currAmmo;
