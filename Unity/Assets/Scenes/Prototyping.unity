@@ -2255,6 +2255,7 @@ MonoBehaviour:
   mouseSensX: 20
   mouseSensY: 20
   cam: {fileID: 1696322518}
+  actualCam: {fileID: 549670758}
   camTarget: {fileID: 427840275}
   camTargetHolder: {fileID: 37627657}
   tripod: {fileID: 1722007034}
@@ -3961,7 +3962,7 @@ GameObject:
   m_Layer: 0
   m_Name: Cameraman
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -4096,7 +4097,7 @@ GameObject:
   m_Layer: 0
   m_Name: Tripod
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

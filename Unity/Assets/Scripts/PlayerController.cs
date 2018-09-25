@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 	Rigidbody rb;
 
 	public GameObject cam;
+    public GameObject actualCam;
 	public GameObject camTarget;
 	public GameObject camTargetHolder;
 	public GameObject tripod;
@@ -51,6 +52,8 @@ public class PlayerController : MonoBehaviour {
     private int secondaryTotalAmmo;
     private int secondaryCurrAmmo;
 
+    private float targetMouseY;
+
     public UnityEvent reload;
     public UnityEvent shoot;
 
@@ -62,6 +65,7 @@ public class PlayerController : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
         swapped = false;
+        targetMouseY = .5f;
 
         primaryCurrAmmo = primary.clipSize;
         primaryTotalAmmo = primary.maxAmmo;
@@ -94,12 +98,10 @@ public class PlayerController : MonoBehaviour {
 		camRb.MovePosition( camNewPos );
 		camTarget.transform.position = Vector3.Lerp( camTarget.transform.position, camTargetHolder.transform.position, .45f );
 		tripod.transform.LookAt( camTarget.transform );
-		float newX = camRb.rotation.eulerAngles.x + (-Input.GetAxis( "Mouse Y" ) * mouseSensY * Time.fixedDeltaTime * 5);
-		if(newX < 180)
-			newX = Mathf.Clamp( newX, 0, 30 );
-		else
-			newX = Mathf.Clamp( newX, 330, 359 );
-		camRb.transform.rotation = Quaternion.Euler( newX, tripod.transform.rotation.eulerAngles.y, tripod.transform.rotation.eulerAngles.z );
+        targetMouseY += Input.GetAxis("Mouse Y") * -mouseSensY / 50;
+        targetMouseY = Mathf.Clamp(targetMouseY, 0, 1);
+        actualCam.transform.localPosition = new Vector3(0, Mathf.Lerp(-5, 5, targetMouseY),0);
+        actualCam.transform.LookAt(camTarget.transform);
 	}
 
     private void Update()
